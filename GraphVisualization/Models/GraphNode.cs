@@ -2,5 +2,6 @@
 
 public class GraphNode
 {
-    public (int, int) Position { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
 }

@@ -5,14 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GraphVisualization.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <ListView ItemsSource="{Binding Nodes}" Margin="142,108,189,171">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Position}" Header="Position"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        Title="MainWindow" Height="720" Width="1280"
+        Name="mainwindow">
+    <Grid Grid.Row="1" Background="#040D12">
+        <Button CommandParameter="{x:Reference Name=mainwindow}" Command="{Binding AddNodeCommand}" Content="ADD NODE" VerticalContentAlignment="Center" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="5" Margin="25"/>
+        <Canvas Width="1000" Height="500" Background="#183D3D">
+            <ItemsControl ItemsSource="{Binding Nodes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="10" Height="10" Fill="#93B1A6" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </Canvas>
     </Grid>
 </Window>
