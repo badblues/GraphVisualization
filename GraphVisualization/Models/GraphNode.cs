@@ -1,7 +1,39 @@
-﻿namespace GraphVisualization.Models;
+﻿using System.ComponentModel;
+using System.Reflection;
 
-public class GraphNode
+namespace GraphVisualization.Models;
+
+public class GraphNode : INotifyPropertyChanged
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    private int x;
+    public int X {
+        get { return x; }
+        set {
+            if (x!= value)
+            {
+                x = value;
+                OnPropertyChanged(nameof(X));
+            }        
+        }
+    }
+    private int y;
+    public int Y
+    {
+        get { return y; }
+        set
+        {
+            if (y != value)
+            {
+                y = value;
+                OnPropertyChanged(nameof(y));
+            }
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }

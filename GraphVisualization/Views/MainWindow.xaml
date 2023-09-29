@@ -2,18 +2,25 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GraphVisualization.Views"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       	
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="MainWindow" Height="720" Width="1280"
         Name="mainwindow">
     <Grid Grid.Row="1" Background="#040D12">
-        <Button CommandParameter="{x:Reference Name=mainwindow}" Command="{Binding AddNodeCommand}" Content="ADD NODE" VerticalContentAlignment="Center" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="5" Margin="25"/>
-        <Canvas Width="1000" Height="500" Background="#183D3D">
+        <Button Command="{Binding AddNodeCommand}" Content="ADD NODE" VerticalContentAlignment="Center" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="5" Margin="25"/>
+        <Canvas Background="#183D3D" Margin="0,0,140,0">
             <ItemsControl ItemsSource="{Binding Nodes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Ellipse Width="10" Height="10" Fill="#93B1A6" />
+                        <Ellipse Width="25" Height="25" Fill="#93B1A6"
+                            MouseLeftButtonDown="Ellipse_MouseLeftButtonDown"
+                            MouseMove="Ellipse_MouseMove"
+                            MouseLeftButtonUp="Ellipse_MouseLeftButtonUp">
+                            <Ellipse.DataContext>
+                                <Binding Path="."/>
+                            </Ellipse.DataContext>
+                        </Ellipse>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
