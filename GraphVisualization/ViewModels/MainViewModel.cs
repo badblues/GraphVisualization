@@ -1,97 +1,136 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 using GraphVisualization.Commands;
 using GraphVisualization.Models;
 
 namespace GraphVisualization.ViewModels;
 
-public class MainViewModel
+public class MainViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<GraphNode> Nodes { get; set; }
+    public ObservableCollection<GraphNodeConnection> Connections { get; set; }
+    public Boolean IsConnecting { get; set; }
     public ICommand AddNodeCommand { get; init; }
     public ICommand StartDragCommand { get; init; }
     public ICommand DragCommand { get; init; }
     public ICommand EndDragCommand { get; init; }
-    private GraphNode? SelectedNode { get; set; }
+    public ICommand AllowConnectionCommand { get; init; }
+    public ICommand ConnectNodeCommand { get; init; }
+    private GraphNode? _selectedNode = null;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public MainViewModel()
     {
-        Nodes = NodeManager.GetNodes();
+        Nodes = NodeManager.Nodes;
+        Connections = NodeManager.Connections;
         AddNodeCommand = new RelayCommand(ExecuteAddNode, CanAddNode);
         StartDragCommand = new RelayCommand(ExecuteStartDrag, CanStartDrag);
         DragCommand = new RelayCommand(ExecuteDrag, CanDrag);
         EndDragCommand = new RelayCommand(ExecuteEndDrag, CanEndDrag);
-        SelectedNode = null;
+        AllowConnectionCommand = new RelayCommand(ExecuteAllowConnection, CanAllowConnection);
+        ConnectNodeCommand = new RelayCommand(ExecuteConnectNode, CanConnectNode);
+        _selectedNode = null;
+        IsConnecting = false;
     }
 
-    private bool CanAddNode(object obj)
+
+    private bool CanAddNode(object parameter)
     {
         return true;
     }
 
-    private void ExecuteAddNode(object obj)
+    private void ExecuteAddNode(object parameter)
     {
         Debug.WriteLine("Adding node");
         Random random = new Random();
         Nodes.Add(new GraphNode { X = 250 + random.Next(100) - 50, Y = 250 + random.Next(100) - 50 });
     }
 
-
-    private void ExecuteStartDrag(object sender)
+    private void ExecuteStartDrag(object parameter)
     {
-        if (sender is UIElement element)
+        if (parameter is FrameworkElement element)
         {
-            var node = FindNodeByUIElement(element);
+            var node = element.DataContext as GraphNode;
             if (node != null)
             {
-                SelectedNode = node;
+                _selectedNode = node;
             }
         }
     }
 
     private bool CanStartDrag(object parameter)
     {
-        return SelectedNode is null;
+        return _selectedNode is null;
     }
 
     private void ExecuteDrag(object parameter)
     {
-        if (SelectedNode != null && parameter is MouseEventArgs e)
+        if (_selectedNode != null && parameter is MouseEventArgs e)
         {
-            // Update the node's position based on the mouse drag.
-            SelectedNode.X = (int)e.GetPosition(null).X - 15;
-            SelectedNode.Y = (int)e.GetPosition(null).Y - 15;
+            //TODO: hardcoded values
+            _selectedNode.X = (int)e.GetPosition(null).X - 15;
+            _selectedNode.Y = (int)e.GetPosition(null).Y - 15;
         }
     }
 
     private bool CanDrag(object parameter)
     {
-        return SelectedNode != null;
+        return _selectedNode != null;
     }
+
     private void ExecuteEndDrag(object parameter)
     {
-        SelectedNode = null; // Clear the selected node after dragging.
+        _selectedNode = null;
     }
 
     private bool CanEndDrag(object parameter)
     {
-        return SelectedNode != null;
+        return _selectedNode != null;
     }
 
-    private GraphNode? FindNodeByUIElement(object sender)
+    private void ExecuteAllowConnection(object parameter)
     {
-        if (sender is FrameworkElement element)
-        {
-            return element.DataContext as GraphNode;
-        }
-        return null;
+        IsConnecting = true;
+        OnPropertyChanged(nameof(IsConnecting));
     }
 
 
+    private bool CanAllowConnection(object parameter)
+    {
+        return true;
+    }
+
+    private void ExecuteConnectNode(object parameter)
+    {
+        if (parameter is FrameworkElement element)
+        {
+            var node = element.DataContext as GraphNode;
+            if (node == null)
+                return;
+            if (_selectedNode == null)
+                _selectedNode = node;
+            else
+            {
+                Connections.Add(new GraphNodeConnection(_selectedNode, node));
+                _selectedNode = null;
+                IsConnecting = false;
+                OnPropertyChanged(nameof(IsConnecting));
+            }
+        }
+    }
+
+    private bool CanConnectNode(object parameter)
+    {
+        return IsConnecting;
+    }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }

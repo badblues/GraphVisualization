@@ -8,8 +8,39 @@
         Title="MainWindow" Height="720" Width="1280"
         Name="mainwindow">
     <Grid Grid.Row="1" Background="#040D12">
-        <Button Command="{Binding AddNodeCommand}" Content="ADD NODE" VerticalContentAlignment="Center" Height="25" Width="100" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="5" Margin="25"/>
+        <Button
+            Command="{Binding AddNodeCommand}"
+            Content="ADD NODE"
+            VerticalContentAlignment="Center"
+            Height="25"
+            Width="100"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Padding="5" Margin="25"/>
+
+        <Button
+            Command="{Binding AllowConnectionCommand}"
+            Content="CONNECT"
+            VerticalContentAlignment="Center"
+            Height="25"
+            Width="100"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Padding="5" Margin="0 75 25 0"/>
+
         <Canvas Background="#183D3D" Margin="0,0,140,0">
+            <Canvas.Style>
+                <Style TargetType="Canvas">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsConnecting}" Value="True">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsConnecting}" Value="False">
+                            <Setter Property="Cursor" Value="Arrow"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Canvas.Style>
             <ItemsControl ItemsSource="{Binding Nodes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -34,6 +65,28 @@
                         <Setter Property="Canvas.Top" Value="{Binding Y}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Connections}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Line
+                            X1="{Binding FirstNode.X}"
+                            Y1="{Binding FirstNode.Y}"
+                            X2="{Binding SecondNode.X}"
+                            Y2="{Binding SecondNode.Y}"
+                            Stroke="#93B1A6"
+                            StrokeThickness="4">
+                            <Line.DataContext>
+                                <Binding Path="."/>
+                            </Line.DataContext>
+                        </Line>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Canvas>
     </Grid>

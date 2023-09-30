@@ -2,6 +2,7 @@
 using System.Windows.Input;
 
 namespace GraphVisualization.Commands;
+
 public class RelayCommand : ICommand
 {
     public event EventHandler? CanExecuteChanged;

@@ -17,7 +17,10 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainViewModel viewModel)
         {
-            viewModel.StartDragCommand.Execute(sender);
+            if (viewModel.IsConnecting)
+                viewModel.ConnectNodeCommand.Execute(sender);
+            else
+                viewModel.StartDragCommand.Execute(sender);
         }
     }
 
@@ -25,7 +28,8 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainViewModel viewModel && e.LeftButton == MouseButtonState.Pressed)
         {
-            viewModel.DragCommand.Execute(e);
+            if (!viewModel.IsConnecting)
+                viewModel.DragCommand.Execute(e);
         }
     }
 
@@ -33,7 +37,8 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainViewModel viewModel)
         {
-            viewModel.EndDragCommand.Execute(null);
+            if (!viewModel.IsConnecting)
+                viewModel.EndDragCommand.Execute(null);
         }
     }
 
