@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using GraphVisualization.Models;
 
+namespace GraphVisualization.Models;
 
 //TODO: Make singletone
 public class NodeManager
