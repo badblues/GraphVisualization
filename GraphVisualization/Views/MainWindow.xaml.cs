@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using GraphVisualization.ViewModels;
 
 namespace GraphVisualization.Views;
@@ -9,9 +8,9 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        InitializeComponent();
         MainViewModel mainViewModel = new MainViewModel();
         DataContext = mainViewModel;
+        InitializeComponent();
     }
 
     private void Ellipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

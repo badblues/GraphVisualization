@@ -27,6 +27,9 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Padding="5" Margin="0 75 25 0"/>
+        <Slider Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,122,10,548" Cursor="Hand" />
+        <Slider Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,161,10,509" Cursor="Hand" />
+        <Slider Value="{Binding NodeManager.NodeRadius, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,636,10,33" Cursor="Hand" />
 
         <Canvas Background="#183D3D" Margin="0,0,140,0">
             <Canvas.Style>

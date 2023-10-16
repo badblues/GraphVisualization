@@ -1,14 +1,87 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace GraphVisualization.Models;
 
-//TODO: Make singletone
+
 public class NodeManager
 {
-    private static ObservableCollection<GraphNode> _nodes = new ObservableCollection<GraphNode> { };
-    private static ObservableCollection<GraphNodeConnection> _connections = new ObservableCollection<GraphNodeConnection> { };
+    private ObservableCollection<GraphNode> _nodes = new ObservableCollection<GraphNode> { };
+    private ObservableCollection<GraphNodeConnection> _connections = new ObservableCollection<GraphNodeConnection> { };
+    private float _repellingForceCoefficient = 1.0f;
+    private float _pullingForceCoefficient = 1.0f;
 
-    public static ObservableCollection<GraphNode> Nodes { get { return _nodes; } }
-    public static ObservableCollection<GraphNodeConnection> Connections { get { return _connections; } }
+    public ObservableCollection<GraphNode> Nodes
+    {
+        get { return _nodes; }
+    }
+
+    public ObservableCollection<GraphNodeConnection> Connections
+    {
+        get { return _connections; }
+    }
+
+    public float RepellingForceCoefficient
+    { 
+        get { return _repellingForceCoefficient; }
+        set { _repellingForceCoefficient = value; }
+    }
+
+    public float PullingForceCoefficient
+    {
+        get { return _pullingForceCoefficient; }
+        set { _pullingForceCoefficient = value; }
+    }
+
+    public void UpdateNodeVelocities(float dt)
+    {
+        foreach (var node in _nodes)
+        {
+            node.VelocityX = 0;
+            node.VelocityY = 0;
+            foreach (var otherNode in _nodes) // Calculating pushing forces
+                if (node != otherNode)
+                {
+                    // Сloser nodes are = more acceleration
+                    float deltaX = node.X - otherNode.X;
+                    float deltaY = node.Y - otherNode.Y;
+
+                    float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                    float G = 100000;
+                    float speed = G / (distance * distance);
+
+                    node.VelocityX += (speed * deltaX / distance) * _repellingForceCoefficient;
+                    node.VelocityY += (speed * deltaY / distance) * _repellingForceCoefficient;
+                }
+        }
+        foreach (var connection in _connections) // Calculating pulling forces
+        {
+            var node = connection.FirstNode;
+            var otherNode = connection.SecondNode;
+
+            float deltaX = node.X - otherNode.X;
+            float deltaY = node.Y - otherNode.Y;
+
+            float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            float G = 10;
+            float speed = distance / G;
+
+            node.VelocityX -= (speed * deltaX / distance) * _pullingForceCoefficient;
+            node.VelocityY -= (speed * deltaY / distance) * _pullingForceCoefficient;
+            otherNode.VelocityX += (speed * deltaX / distance) * _pullingForceCoefficient;
+            otherNode.VelocityY += (speed * deltaY / distance) * _pullingForceCoefficient;
+        }
+        UpdateNodePositions(dt);
+    }
+
+    private void UpdateNodePositions(float dt)
+    {
+        foreach (var node in _nodes)
+        {
+            node.X += (int)(node.VelocityX * dt);
+            node.Y += (int)(node.VelocityY * dt);
+        }
+    }
 
 }

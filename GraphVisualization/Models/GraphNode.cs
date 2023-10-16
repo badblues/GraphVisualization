@@ -14,6 +14,7 @@ public class GraphNode : INotifyPropertyChanged
         }
     }
 
+
     public int Y
     {
         get { return _y; }

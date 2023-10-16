@@ -2,13 +2,11 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using GraphVisualization.Commands;
 using GraphVisualization.Models;
-using Microsoft.Xaml.Behaviors.Layout;
 
 namespace GraphVisualization.ViewModels;
 
@@ -28,11 +26,15 @@ public class MainViewModel : INotifyPropertyChanged
     private Stopwatch stopwatch = new Stopwatch();
     private long previousFrameTime = 0;
     private GraphNode? _selectedNode = null;
+    private NodeManager _nodeManager;
+    public NodeManager NodeManager {  get { return _nodeManager; } }
+    public float NodeRadius { get; set; } = 10;
 
     public MainViewModel()
     {
-        Nodes = NodeManager.Nodes;
-        Connections = NodeManager.Connections;
+        _nodeManager = new NodeManager();
+        Nodes = _nodeManager.Nodes;
+        Connections = _nodeManager.Connections;
         AddNodeCommand = new RelayCommand(ExecuteAddNode, CanAddNode);
         StartDragCommand = new RelayCommand(ExecuteStartDrag, CanStartDrag);
         DragCommand = new RelayCommand(ExecuteDrag, CanDrag);
@@ -41,75 +43,17 @@ public class MainViewModel : INotifyPropertyChanged
         ConnectNodeCommand = new RelayCommand(ExecuteConnectNode, CanConnectNode);
         _selectedNode = null;
         IsConnecting = false;
-        CompositionTarget.Rendering += UpdateNodeVelocities;
-        Nodes.Add(new GraphNode { X = 15, Y = 45});
-        Nodes.Add(new GraphNode { X = 100, Y = 255 });
+        CompositionTarget.Rendering += UpdateNodePositions;
     }
 
-    private void UpdateNodeVelocities(Object? sender, EventArgs e)
+    private void UpdateNodePositions(Object? sender, EventArgs e)
     {
         if (!stopwatch.IsRunning)
             stopwatch.Start();
         long currentFrameTime = stopwatch.ElapsedMilliseconds;
-        float dt = (currentFrameTime - previousFrameTime) / 1000.0f;
-        if (dt < 0.1)
-        {
-            UpdateNodePositions(dt);
-            return;
-        }
+        float dt = (currentFrameTime - previousFrameTime) / 1000.0f;        
+        _nodeManager.UpdateNodeVelocities(dt);
         previousFrameTime = currentFrameTime;
-        foreach (var node in Nodes)
-        {
-            node.VelocityX = 0;
-            node.VelocityY = 0;
-            foreach (var otherNode in Nodes) //Calculating pushing forces
-                if (node != otherNode)
-                {
-                    // closer nodes are = more acceleration
-                    float deltaX = node.X - otherNode.X;
-                    float deltaY = node.Y - otherNode.Y;
-
-                    float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
-
-                    float G = 100000;
-
-                    float speed = G / (distance * distance);
-
-                    node.VelocityX += speed * deltaX / distance;
-                    node.VelocityY += speed * deltaY / distance;
-                }
-        }
-        foreach(var connection in Connections) //Calculating pulling forces
-        {
-            var node = connection.FirstNode;
-            var otherNode = connection.SecondNode;
-
-            float deltaX = node.X - otherNode.X;
-            float deltaY = node.Y - otherNode.Y;
-
-            float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
-
-            float G = 10;
-
-            float speed = distance / G;
-
-            node.VelocityX -= speed * deltaX / distance;
-            node.VelocityY -= speed * deltaY / distance;
-            otherNode.VelocityX += speed * deltaX / distance;
-            otherNode.VelocityY += speed * deltaY / distance;
-
-
-        }
-        UpdateNodePositions(dt);
-    }
-
-    private void UpdateNodePositions(float dt)
-    {
-        foreach (var node in Nodes)
-        {
-            node.X += (int)(node.VelocityX * dt);
-            node.Y += (int)(node.VelocityY * dt);
-        }
     }
 
     private bool CanAddNode(object parameter)
