@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using GraphVisualization.Commands;
+using GraphVisualization.Converters;
 using GraphVisualization.Models;
 
 namespace GraphVisualization.ViewModels;
@@ -27,8 +28,9 @@ public class MainViewModel : INotifyPropertyChanged
     private long previousFrameTime = 0;
     private GraphNode? _selectedNode = null;
     private NodeManager _nodeManager;
+    private int _nodeRadius = 15;
     public NodeManager NodeManager {  get { return _nodeManager; } }
-    public float NodeRadius { get; set; } = 10;
+    public int NodeRadius { get { return _nodeRadius;  } set { _nodeRadius = value;  OnPropertyChanged(nameof(NodeRadius)); } }
 
     public MainViewModel()
     {
@@ -90,8 +92,8 @@ public class MainViewModel : INotifyPropertyChanged
         if (_selectedNode != null && parameter is MouseEventArgs e)
         {
             //TODO: hardcoded values
-            _selectedNode.X = (int)e.GetPosition(null).X - 15;
-            _selectedNode.Y = (int)e.GetPosition(null).Y - 15;
+            _selectedNode.X = (int)e.GetPosition(null).X;
+            _selectedNode.Y = (int)e.GetPosition(null).Y;
             _selectedNode.VelocityX = 0;
             _selectedNode.VelocityY = 0;
         }

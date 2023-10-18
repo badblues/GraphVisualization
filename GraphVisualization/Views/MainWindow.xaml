@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"       	
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        xmlns:localconverters="clr-namespace:GraphVisualization.Converters"
         Title="MainWindow" Height="720" Width="1280"
         Name="mainwindow">
+    <Window.Resources>
+        <localconverters:CenterXConverter x:Key="CenterXConverter" />
+        <localconverters:CenterYConverter x:Key="CenterYConverter" />
+    </Window.Resources>
     <Grid Grid.Row="1" Background="#040D12">
         <Button
             Command="{Binding AddNodeCommand}"
@@ -29,7 +34,7 @@
             Padding="5" Margin="0 75 25 0"/>
         <Slider Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,122,10,548" Cursor="Hand" />
         <Slider Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,161,10,509" Cursor="Hand" />
-        <Slider Value="{Binding NodeManager.NodeRadius, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,636,10,33" Cursor="Hand" />
+        <Slider Value="{Binding NodeRadius, Mode=TwoWay}" Minimum="10" Maximum="35" Margin="1148,636,10,33" Cursor="Hand" />
 
         <Canvas Background="#183D3D" Margin="0,0,140,0">
             <Canvas.Style>
@@ -47,13 +52,13 @@
             <ItemsControl ItemsSource="{Binding Nodes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Ellipse Width="25" Height="25" Fill="#93B1A6"
+                        <Ellipse 
+                            Width="{Binding DataContext.NodeRadius, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            Height="{Binding DataContext.NodeRadius, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            Fill="#93B1A6"
                             MouseLeftButtonDown="Ellipse_MouseLeftButtonDown"
                             MouseMove="Ellipse_MouseMove"
                             MouseLeftButtonUp="Ellipse_MouseLeftButtonUp">
-                            <Ellipse.DataContext>
-                                <Binding Path="."/>
-                            </Ellipse.DataContext>
                         </Ellipse>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -64,8 +69,22 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
-                        <Setter Property="Canvas.Left" Value="{Binding X}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        <Setter Property="Canvas.Left">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource CenterXConverter}">
+                                    <Binding Path="X" />
+                                    <Binding Path="DataContext.NodeRadius" RelativeSource="{RelativeSource AncestorType={x:Type Window}}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Canvas.Top">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource CenterYConverter}">
+                                    <Binding Path="Y" />
+                                    <Binding Path="DataContext.NodeRadius" RelativeSource="{RelativeSource AncestorType={x:Type Window}}" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
