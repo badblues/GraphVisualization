@@ -28,7 +28,7 @@ public class MainViewModel : INotifyPropertyChanged
     private long previousFrameTime = 0;
     private GraphNode? _selectedNode = null;
     private NodeManager _nodeManager;
-    private int _nodeRadius = 15;
+    private int _nodeRadius = 20;
     public NodeManager NodeManager {  get { return _nodeManager; } }
     public int NodeRadius { get { return _nodeRadius;  } set { _nodeRadius = value;  OnPropertyChanged(nameof(NodeRadius)); } }
 
@@ -91,11 +91,11 @@ public class MainViewModel : INotifyPropertyChanged
     {
         if (_selectedNode != null && parameter is MouseEventArgs e)
         {
-            //TODO: hardcoded values
             _selectedNode.X = (int)e.GetPosition(null).X;
             _selectedNode.Y = (int)e.GetPosition(null).Y;
             _selectedNode.VelocityX = 0;
             _selectedNode.VelocityY = 0;
+            _selectedNode.NodeColor = new SolidColorBrush(Colors.Cyan);
         }
     }
 
@@ -106,6 +106,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void ExecuteEndDrag(object parameter)
     {
+        if (_selectedNode != null)
+            _selectedNode.NodeColor = new SolidColorBrush(Colors.AliceBlue);
         _selectedNode = null;
     }
 
@@ -131,13 +133,21 @@ public class MainViewModel : INotifyPropertyChanged
         if (parameter is FrameworkElement element)
         {
             var node = element.DataContext as GraphNode;
-            if (node == null)
+            if (node == null || node == _selectedNode)
                 return;
             if (_selectedNode == null)
+            {
                 _selectedNode = node;
+                _selectedNode.NodeColor = new SolidColorBrush(Colors.OrangeRed);
+            }
             else
             {
+                foreach (var connection in Connections)
+                    if (connection.FirstNode == node && connection.SecondNode == _selectedNode
+                        || connection.FirstNode == _selectedNode && connection.SecondNode == node)
+                        return;
                 Connections.Add(new GraphNodeConnection(_selectedNode, node));
+                _selectedNode.NodeColor = new SolidColorBrush(Colors.AliceBlue);
                 _selectedNode = null;
                 IsConnecting = false;
                 OnPropertyChanged(nameof(IsConnecting));

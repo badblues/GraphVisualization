@@ -32,11 +32,12 @@
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Padding="5" Margin="0 75 25 0"/>
-        <Slider Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,122,10,548" Cursor="Hand" />
-        <Slider Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="10" Margin="1148,161,10,509" Cursor="Hand" />
+        <Slider Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="50" Margin="1148,122,10,548" Cursor="Hand" />
+        <Slider Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}" Minimum="0" Maximum="50" Margin="1148,161,10,509" Cursor="Hand" />
         <Slider Value="{Binding NodeRadius, Mode=TwoWay}" Minimum="10" Maximum="35" Margin="1148,636,10,33" Cursor="Hand" />
 
-        <Canvas Background="#183D3D" Margin="0,0,140,0">
+        <Canvas Background="#183D3D" Margin="0,0,140,0"
+                MouseMove="Canvas_MouseMove">
             <Canvas.Style>
                 <Style TargetType="Canvas">
                     <Style.Triggers>
@@ -49,15 +50,36 @@
                     </Style.Triggers>
                 </Style>
             </Canvas.Style>
+            <ItemsControl ItemsSource="{Binding Connections}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Line
+                            X1="{Binding FirstNode.X}"
+                            Y1="{Binding FirstNode.Y}"
+                            X2="{Binding SecondNode.X}"
+                            Y2="{Binding SecondNode.Y}"
+                            Stroke="#93B1A6"
+                            StrokeThickness="4">
+                            <Line.DataContext>
+                                <Binding Path="."/>
+                            </Line.DataContext>
+                        </Line>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
             <ItemsControl ItemsSource="{Binding Nodes}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Ellipse 
                             Width="{Binding DataContext.NodeRadius, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                             Height="{Binding DataContext.NodeRadius, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                            Fill="#93B1A6"
+                            Fill="{Binding NodeColor}"
                             MouseLeftButtonDown="Ellipse_MouseLeftButtonDown"
-                            MouseMove="Ellipse_MouseMove"
                             MouseLeftButtonUp="Ellipse_MouseLeftButtonUp">
                         </Ellipse>
                     </DataTemplate>
@@ -87,28 +109,6 @@
                         </Setter>
                     </Style>
                 </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-            <ItemsControl ItemsSource="{Binding Connections}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Line
-                            X1="{Binding FirstNode.X}"
-                            Y1="{Binding FirstNode.Y}"
-                            X2="{Binding SecondNode.X}"
-                            Y2="{Binding SecondNode.Y}"
-                            Stroke="#93B1A6"
-                            StrokeThickness="4">
-                            <Line.DataContext>
-                                <Binding Path="."/>
-                            </Line.DataContext>
-                        </Line>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Canvas>
     </Grid>

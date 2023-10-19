@@ -24,7 +24,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Ellipse_MouseMove(object sender, MouseEventArgs e)
+    private void Canvas_MouseMove(object sender, MouseEventArgs e)
     {
         if (DataContext is MainViewModel viewModel && e.LeftButton == MouseButtonState.Pressed)
         {

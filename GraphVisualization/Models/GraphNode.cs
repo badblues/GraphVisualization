@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Media;
 
 namespace GraphVisualization.Models;
 
@@ -14,7 +16,6 @@ public class GraphNode : INotifyPropertyChanged
         }
     }
 
-
     public int Y
     {
         get { return _y; }
@@ -28,18 +29,22 @@ public class GraphNode : INotifyPropertyChanged
     public float VelocityX
     {
         get { return _velocityX; }
-        set
-        {
-            _velocityX = value;
-        }
+        set { _velocityX = value; }
     }
 
     public float VelocityY
     {
         get { return _velocityY; }
+        set { _velocityY = value; }
+    }
+
+    public Brush NodeColor
+    {
+        get { return _color; }
         set
         {
-            _velocityY = value;
+            _color = value;
+            OnPropertyChanged(nameof(NodeColor));
         }
     }
 
@@ -50,9 +55,11 @@ public class GraphNode : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    private Brush _color = new SolidColorBrush(Colors.AliceBlue);
     private int _x = 0;
     private int _y = 0;
     private float _velocityX;
     private float _velocityY;
+
 }
 

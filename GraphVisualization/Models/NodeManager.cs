@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace GraphVisualization.Models;
 
-
 public class NodeManager
 {
     private ObservableCollection<GraphNode> _nodes = new ObservableCollection<GraphNode> { };
@@ -48,7 +47,7 @@ public class NodeManager
                     float deltaY = node.Y - otherNode.Y;
 
                     float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                    float G = 100000;
+                    float G = 150000;
                     float speed = G / (distance * distance);
 
                     node.VelocityX += (speed * deltaX / distance) * _repellingForceCoefficient;
@@ -64,13 +63,15 @@ public class NodeManager
             float deltaY = node.Y - otherNode.Y;
 
             float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            float G = 10;
-            float speed = distance / G;
-
-            node.VelocityX -= (speed * deltaX / distance) * _pullingForceCoefficient;
-            node.VelocityY -= (speed * deltaY / distance) * _pullingForceCoefficient;
-            otherNode.VelocityX += (speed * deltaX / distance) * _pullingForceCoefficient;
-            otherNode.VelocityY += (speed * deltaY / distance) * _pullingForceCoefficient;
+            if (distance > 1e-7)
+            {
+                float G = 10;
+                float speed = distance / G;
+                node.VelocityX -= (speed * deltaX / distance) * _pullingForceCoefficient;
+                node.VelocityY -= (speed * deltaY / distance) * _pullingForceCoefficient;
+                otherNode.VelocityX += (speed * deltaX / distance) * _pullingForceCoefficient;
+                otherNode.VelocityY += (speed * deltaY / distance) * _pullingForceCoefficient;
+            }
         }
         UpdateNodePositions(dt);
     }
@@ -79,8 +80,10 @@ public class NodeManager
     {
         foreach (var node in _nodes)
         {
-            node.X += (int)(node.VelocityX * dt);
-            node.Y += (int)(node.VelocityY * dt);
+            int dx = (int)(node.VelocityX * dt);
+            int dy = (int)(node.VelocityY * dt);
+            node.X += dx;
+            node.Y += dy;
         }
     }
 
