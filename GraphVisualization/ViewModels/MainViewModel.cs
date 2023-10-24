@@ -15,7 +15,7 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<GraphNode> Nodes { get; set; }
     public ObservableCollection<GraphNodeConnection> Connections { get; set; }
-    public Boolean IsConnecting { get; set; }
+    public bool IsConnecting { get; set; }
     public ICommand AddNodeCommand { get; init; }
     public ICommand StartDragCommand { get; init; }
     public ICommand DragCommand { get; init; }
@@ -118,7 +118,9 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void ExecuteAllowConnection(object parameter)
     {
-        IsConnecting = true;
+        IsConnecting = !IsConnecting;
+        if (!IsConnecting)
+            RemoveSelectedNode();
         OnPropertyChanged(nameof(IsConnecting));
     }
 
@@ -147,10 +149,7 @@ public class MainViewModel : INotifyPropertyChanged
                         || connection.FirstNode == _selectedNode && connection.SecondNode == node)
                         return;
                 Connections.Add(new GraphNodeConnection(_selectedNode, node));
-                _selectedNode.NodeColor = new SolidColorBrush(Colors.AliceBlue);
-                _selectedNode = null;
-                IsConnecting = false;
-                OnPropertyChanged(nameof(IsConnecting));
+                RemoveSelectedNode();
             }
         }
     }
@@ -158,6 +157,14 @@ public class MainViewModel : INotifyPropertyChanged
     private bool CanConnectNode(object parameter)
     {
         return IsConnecting;
+    }
+
+    private void RemoveSelectedNode()
+    {
+        if (_selectedNode == null)
+            return;
+        _selectedNode.NodeColor = new SolidColorBrush(Colors.AliceBlue);
+        _selectedNode = null;
     }
 
     protected virtual void OnPropertyChanged(string propertyName)

@@ -42,7 +42,7 @@ public class NodeManager
             foreach (var otherNode in _nodes) // Calculating pushing forces
                 if (node != otherNode)
                 {
-                    // Сloser nodes are = more acceleration
+                    // Сloser nodes are => more acceleration
                     float deltaX = node.X - otherNode.X;
                     float deltaY = node.Y - otherNode.Y;
 
@@ -63,7 +63,7 @@ public class NodeManager
             float deltaY = node.Y - otherNode.Y;
 
             float distance = MathF.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance > 1e-7)
+            if (distance > 1e-1)
             {
                 float G = 10;
                 float speed = distance / G;
