@@ -33,6 +33,12 @@ public class NodeManager
         set { _pullingForceCoefficient = value; }
     }
 
+    public void Clear()
+    {
+        _nodes.Clear();
+        _connections.Clear();
+    }
+
     public void UpdateNodeVelocities(float dt)
     {
         foreach (var node in _nodes)
@@ -82,8 +88,10 @@ public class NodeManager
         {
             int dx = (int)(node.VelocityX * dt);
             int dy = (int)(node.VelocityY * dt);
-            node.X += dx;
-            node.Y += dy;
+            if (node.X + dx > 0 && node.X + dx < 1080) // hardcode values for window size :\
+                node.X += dx;
+            if (node.Y + dy > 0 && node.Y + dy < 685)
+                node.Y += dy;
         }
     }
 

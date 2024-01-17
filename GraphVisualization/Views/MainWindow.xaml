@@ -11,33 +11,69 @@
     <Window.Resources>
         <localconverters:CenterXConverter x:Key="CenterXConverter" />
         <localconverters:CenterYConverter x:Key="CenterYConverter" />
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
-    <Grid Grid.Row="1" Background="#040D12">
-        <Button
-            Command="{Binding AddNodeCommand}"
-            Content="ADD NODE"
-            VerticalContentAlignment="Center"
-            Height="25"
-            Width="100"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Padding="5" Margin="25"/>
+    <Grid Background="#040D12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1091*"/>
+            <ColumnDefinition Width="189*"/>
+        </Grid.ColumnDefinitions>
 
-        <Button
-            Command="{Binding AllowConnectionCommand}"
-            Content="CONNECT"
-            VerticalContentAlignment="Center"
-            Height="25"
-            Width="100"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Padding="5" Margin="0 75 25 0"/>
-        <Slider Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}" Minimum="2" Maximum="50" Margin="1148,122,10,548" Cursor="Hand" />
-        <Slider Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}" Minimum="2" Maximum="50" Margin="1148,161,10,509" Cursor="Hand" />
-        <Slider Value="{Binding NodeRadius, Mode=TwoWay}" Minimum="10" Maximum="35" Margin="1148,636,10,33" Cursor="Hand" />
+        <StackPanel
+            Grid.Column="1">
+            <Button
+                Command="{Binding AddNodeCommand}"
+                Content="ADD NODE"
+                VerticalContentAlignment="Center"
+                Height="25"
+                Width="100"
+                VerticalAlignment="Top"
+                Margin="0 10 0 10"/>
+            <Button
+                Command="{Binding AllowConnectionCommand}"
+                Content="{Binding ConnectButtonContent}"
+                VerticalContentAlignment="Center"
+                Height="25"
+                Width="100"
+                VerticalAlignment="Top"
+                Margin="0 10 0 10"/>
+            <Button
+                Command="{Binding ClearCommand}"
+                Content="CLEAR"
+                VerticalContentAlignment="Center"
+                Height="25"
+                Width="100"
+                VerticalAlignment="Top"
+                Margin="0 10 0 10"/>
+            <Label Content="Pushing force multiplier"/>
+            <Slider
+                Value="{Binding NodeManager.RepellingForceCoefficient, Mode=TwoWay}"
+                Minimum="2" Maximum="50"
+                Margin="0 10 0 10"
+                Cursor="Hand"/>
+            <Label Content="Pulling force multiplier"/>
+            <Slider
+                Value="{Binding NodeManager.PullingForceCoefficient, Mode=TwoWay}"
+                Minimum="2" Maximum="50"
+                Margin="0 10 0 10"
+                Cursor="Hand"/>
+            <Label Content="Node Size"/>
+            <Slider
+                Value="{Binding NodeRadius, Mode=TwoWay}"
+                Minimum="10" Maximum="35"
+                Margin="0 10 0 10"
+                Cursor="Hand"/>
+        </StackPanel>
 
-        <Canvas Background="#183D3D" Margin="0,0,140,0"
-                MouseMove="Canvas_MouseMove">
+        <Canvas
+            Grid.Column="0"
+            Background="#183D3D"
+            MouseMove="Canvas_MouseMove">
             <Canvas.Style>
                 <Style TargetType="Canvas">
                     <Style.Triggers>

@@ -22,15 +22,18 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand EndDragCommand { get; init; }
     public ICommand AllowConnectionCommand { get; init; }
     public ICommand ConnectNodeCommand { get; init; }
+    public ICommand ClearCommand { get; init; }
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public NodeManager NodeManager {  get { return _nodeManager; } }
+    public int NodeRadius { get { return _nodeRadius;  } set { _nodeRadius = value;  OnPropertyChanged(nameof(NodeRadius)); } }
+    public string ConnectButtonContent { get; set; } = "CONNECT";
 
     private Stopwatch stopwatch = new Stopwatch();
     private long previousFrameTime = 0;
     private GraphNode? _selectedNode = null;
     private NodeManager _nodeManager;
     private int _nodeRadius = 20;
-    public NodeManager NodeManager {  get { return _nodeManager; } }
-    public int NodeRadius { get { return _nodeRadius;  } set { _nodeRadius = value;  OnPropertyChanged(nameof(NodeRadius)); } }
 
     public MainViewModel()
     {
@@ -43,12 +46,13 @@ public class MainViewModel : INotifyPropertyChanged
         EndDragCommand = new RelayCommand(ExecuteEndDrag, CanEndDrag);
         AllowConnectionCommand = new RelayCommand(ExecuteAllowConnection, CanAllowConnection);
         ConnectNodeCommand = new RelayCommand(ExecuteConnectNode, CanConnectNode);
+        ClearCommand = new RelayCommand(ExecuteClear, CanClear);
         _selectedNode = null;
         IsConnecting = false;
         CompositionTarget.Rendering += UpdateNodePositions;
     }
 
-    private void UpdateNodePositions(Object? sender, EventArgs e)
+    private void UpdateNodePositions(object? sender, EventArgs e)
     {
         if (!stopwatch.IsRunning)
             stopwatch.Start();
@@ -118,9 +122,11 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void ExecuteAllowConnection(object parameter)
     {
-        IsConnecting = !IsConnecting;
-        if (!IsConnecting)
+        if (IsConnecting)
             RemoveSelectedNode();
+        IsConnecting = !IsConnecting;
+        ConnectButtonContent = IsConnecting ? "STOP" : "CONNECT";
+        OnPropertyChanged(nameof(ConnectButtonContent));
         OnPropertyChanged(nameof(IsConnecting));
     }
 
@@ -152,6 +158,16 @@ public class MainViewModel : INotifyPropertyChanged
                 RemoveSelectedNode();
             }
         }
+    }
+
+    private void ExecuteClear(object parametere)
+    {
+        NodeManager.Clear();
+    }
+
+    private bool CanClear(object parametere)
+    {
+        return true;
     }
 
     private bool CanConnectNode(object parameter)
