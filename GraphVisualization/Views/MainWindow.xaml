@@ -6,7 +6,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         xmlns:localconverters="clr-namespace:GraphVisualization.Converters"
-        Title="MainWindow" Height="720" Width="1280"
+        Title="GraphVisualization" Height="720" Width="1280"
         Name="mainwindow">
     <Window.Resources>
         <localconverters:CenterXConverter x:Key="CenterXConverter" />
